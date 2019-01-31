@@ -1,11 +1,11 @@
 # Geolocation app
 
-## Requirements
+A position register's application (tracking-gps) in real time.
 
-* Nodejs
-* Mongodb
+## Software Requirements
 
-Modules require:
+For this project, we use Nodejs as a framework and MondoDB as database.
+Modules require for nodejs:
 * express 
 * express-handlebars
 * express-session 
@@ -17,4 +17,12 @@ Modules require:
 
 ## Usage
 
+``` bash
 node src/index.js
+```
+
+Or
+
+``` bash
+npm run dev
+```
