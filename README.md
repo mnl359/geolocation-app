@@ -5,7 +5,13 @@ A position register's application (tracking-gps) in real time.
 ## Software Requirements
 
 For this project, we use Nodejs as a framework and MondoDB as database.
+
 Modules require for nodejs:
+
+``` bash
+npm install <module>
+```
+
 * express 
 * express-handlebars
 * express-session 
