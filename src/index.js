@@ -4,7 +4,7 @@ const exphbs = require('express-handlebars');
 const method = require('method-override');
 const expSession = require('express-session');
 
-// Initiliazations
+// Initialization
 const app = express();
 require('./database');
 
