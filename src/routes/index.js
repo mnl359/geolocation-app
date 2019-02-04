@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const User = require('../models/User');
 const passport = require('passport');
+const geolocation = require('geolocation');
 
 router.get('/', (req, res) => {
     res.render('index');
@@ -50,6 +51,13 @@ router.post('/signup', async (req, res) => {
 
 router.get('/geolocation', (req, res) => {
     res.render('geolocation');
+});
+
+router.post('/geolocation', (req, res) => {
+    geolocation.getCurrentPosition(function (err, position) {
+        if (err) throw err
+        console.log(position)
+    });
 });
 
 module.exports = router;

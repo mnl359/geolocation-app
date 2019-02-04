@@ -32,3 +32,4 @@ Or
 ``` bash
 npm run dev
 ```
+Then in your browser enter to: [localhost:3000](localhost:3000)
