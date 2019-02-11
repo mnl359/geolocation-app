@@ -1,7 +1,11 @@
 const router = require('express').Router();
 const User = require('../models/User');
 const passport = require('passport');
-const geolocation = require('geolocation');
+const io = require('../index');
+const routes = require('../models/routes');
+const points = require('../models/points');
+
+var lastRoutId = "";
 
 router.get('/', (req, res) => {
     res.render('index');
@@ -53,10 +57,26 @@ router.get('/geolocation', (req, res) => {
     res.render('geolocation');
 });
 
-router.post('/geolocation', (req, res) => {
-    geolocation.getCurrentPosition(function (err, position) {
-        if (err) throw err
-        console.log(position)
+io.on('connection', function(socket){
+    socket.on('new route', async function(route){
+        const newRoute = new routes({
+            user: route.user,
+            name: route.name
+        });
+        lastRoutId = newRoute.id;
+        await newRoute.save();
+    });
+});
+
+io.on('connection', function(socket){
+    socket.on('new point', async function(point){
+        const newPoint = new points({
+            idRoute: lastRoutId,
+            latitude: point.latitude,
+            longitude: point.longitude,
+            user: point.user
+        });
+        await newPoint.save();
     });
 });
 

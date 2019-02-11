@@ -1,1 +1,78 @@
-<h1>Geolocation</h1>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<input type="hidden" id="user" value="{{ user._id }}"/>
+<style>
+    #map{
+        height: 400px;
+        width: 100%;
+    }
+</style>
+<body>
+    <div id="map">
+        <h1>My google map</h1>
+    </div>
+    <script>
+        var map, infoWindow, watchID, routeId, socket;
+        function initMap() {
+            var options = {
+                zoom: 8,
+                center: {lat: 6.25184, lng: -75.56359}
+            }
+            //document.getElementById('btnStopRec').disabled = true;
+            map = new google.maps.Map(document.getElementById('map'), options);
+            infoWindow = new google.maps.InfoWindow;
+        }
+        function startRecording(){
+            var socket = io();
+            document.getElementById('btnStartRec').disabled = true;
+            document.getElementById('btnStopRec').disabled = false;
+            socket.emit('new route', {user: document.getElementById('user').value, name: document.getElementById('routeName').value });
+            if (navigator.geolocation) {
+                watchID = navigator.geolocation.watchPosition(function (position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    socket.emit('new point',{latitude: pos.lat, longitude: pos.lng, user: document.getElementById('user').value});
+                    var marker = new google.maps.Marker({
+                        position: pos,
+                        map:map
+                    });
+                }, function(){
+                    handleLocationError(true, infoWindow, map.getCenter());
+                });
+            } else {
+                handleLocationError(false, infoWindow, map.getCenter());
+            }
+        }
+        async function stopRecording(){
+            navigator.geolocation.clearWatch(watchID);
+            document.getElementById('btnStartRec').disabled = false;
+            //document.submitForm.submit();
+        }
+
+        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+            infoWindow.open(map);
+        }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7OfmFZe0L2C6UOLaQPXUlZWutYrLQ8rI&callback=initMap">
+    </script>
+</body>
+    <hr class="my-4">
+    <div class="col-md-4 mx-auto">
+        <div class="form-group">
+            <input type="text" id="routeName" class="form-control" placeholder="Route name" autofocus required>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary btn-block" id="btnStartRec" onclick="startRecording()">Start</button>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary btn-block" id="btnStopRec" onclick="stopRecording()">Stop</button>
+        </div>
+    </div>
+</div>

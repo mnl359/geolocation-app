@@ -6,11 +6,14 @@ const expSession = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 
-
 // Initialization
 const app = express();
 require('./database');
 require('./config/passport');
+
+const http = require('http').Server(app);
+const io = require('socket.io').listen(http);
+module.exports = io; // Usarlo en otra parte :3
 
 // Settings
 app.set('port', process.env.PORT || 3000);
@@ -51,6 +54,6 @@ app.use(require('./routes/index'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Server init
-app.listen(app.get('port'), () => {
+http.listen(app.get('port'), () => {
     console.log('server on port', app.get('port'));
 });
