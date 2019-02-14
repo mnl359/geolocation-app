@@ -49,6 +49,7 @@
         async function stopRecording(){
             navigator.geolocation.clearWatch(watchID);
             document.getElementById('btnStart').disabled = false;
+            location.reload();
         }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -72,7 +73,7 @@
             <button class="btn btn-primary btn-block" id="btnStart" onclick="startRecording()">Start</button>
         </div>
         <div class="form-group">
-            <a href="/geolocation"><button class="btn btn-primary btn-block" id="btnStop" onclick="stopRecording()">Stop</button></a>
+            <button class="btn btn-primary btn-block" id="btnStop" onclick="stopRecording()">Stop</button>
         </div>
     </div>
 </div>
