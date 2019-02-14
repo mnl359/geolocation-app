@@ -25,7 +25,7 @@ router.get('/signup', (req, res) => {
     res.render('signup');
 });
 router.post('/signup', async (req, res) => {
-    const {email, name, password} = req.body;  
+    const {email, name, password} = req.body;
     const errors = [];
     if (email.length <= 0){
         errors.push({text: 'Email is empty'});
@@ -53,8 +53,23 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-router.get('/geolocation', (req, res) => {
+router.get('/geolocation', async (req, res) => {
+    var allRoutes = await routes.find({user: req.user.id}).sort({date:'desc'});
+    res.render('geolocation', {allRoutes});
+});
+
+router.post('/geolocation', function(req, res){
+    req.flash('success_msm', 'Route saved');
     res.render('geolocation');
+});
+
+router.get('/routeDetails', async function(req, res){
+    const allPoints = await points.find({idRoute: req.params.id}).sort({date:'desc'});
+    res.render('routeDetails', {pointsArray: JSON.stringify(allPoints), allPoints});
+});
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
 });
 
 io.on('connection', function(socket){

@@ -4,16 +4,17 @@ const local_passport = require('passport-local');
 const User = require('../models/User');
 
 passport.use(new local_passport({
-    usernameField: 'email'
+    usernameField: 'email',
+    passwordField: 'password'
 }, async (email, password, done) =>{
-    const user = await User.findOne({email: email});
-    if(!user){
+    const mail = await User.findOne({email: email});
+    if(!mail){
         return done(null, false, {message: 'Not user found'});
     }
     else{
-        const match = await user.decrypt(password);
+        const match = await mail.decrypt(password);
         if (match){
-            return done(null, user);
+            return done(null, mail);
         }
         else{
             return done(null, false, {message: 'Incorrect password' })

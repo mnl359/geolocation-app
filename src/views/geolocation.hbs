@@ -1,6 +1,6 @@
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-<input type="hidden" id="user" value="{{ user._id }}"/>
+<input type="hidden" id="userId" value="{{ user._id }}"/>
 <style>
     #map{
         height: 400px;
@@ -18,22 +18,23 @@
                 zoom: 8,
                 center: {lat: 6.25184, lng: -75.56359}
             }
-            //document.getElementById('btnStopRec').disabled = true;
+            document.getElementById('btnStop').disabled = true;
             map = new google.maps.Map(document.getElementById('map'), options);
             infoWindow = new google.maps.InfoWindow;
         }
         function startRecording(){
             var socket = io();
-            document.getElementById('btnStartRec').disabled = true;
-            document.getElementById('btnStopRec').disabled = false;
-            socket.emit('new route', {user: document.getElementById('user').value, name: document.getElementById('routeName').value });
+            console.log(document.getElementById('userId').value);
+            document.getElementById('btnStart').disabled = true;
+            document.getElementById('btnStop').disabled = false;
+            socket.emit('new route', {user: document.getElementById('userId').value, name: document.getElementById('routeName').value });
             if (navigator.geolocation) {
                 watchID = navigator.geolocation.watchPosition(function (position) {
                     var pos = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    socket.emit('new point',{latitude: pos.lat, longitude: pos.lng, user: document.getElementById('user').value});
+                    socket.emit('new point',{latitude: pos.lat, longitude: pos.lng, user: document.getElementById('userId').value});
                     var marker = new google.maps.Marker({
                         position: pos,
                         map:map
@@ -47,8 +48,7 @@
         }
         async function stopRecording(){
             navigator.geolocation.clearWatch(watchID);
-            document.getElementById('btnStartRec').disabled = false;
-            //document.submitForm.submit();
+            document.getElementById('btnStart').disabled = false;
         }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -69,10 +69,45 @@
             <input type="text" id="routeName" class="form-control" placeholder="Route name" autofocus required>
         </div>
         <div class="form-group">
-            <button class="btn btn-primary btn-block" id="btnStartRec" onclick="startRecording()">Start</button>
+            <button class="btn btn-primary btn-block" id="btnStart" onclick="startRecording()">Start</button>
         </div>
         <div class="form-group">
-            <button class="btn btn-primary btn-block" id="btnStopRec" onclick="stopRecording()">Stop</button>
+            <button class="btn btn-primary btn-block" id="btnStop" onclick="stopRecording()">Stop</button>
         </div>
     </div>
+</div>
+
+<div class="row-md-4 mx-auto">
+    <head>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 15px;
+                font-size:140%;
+                text-align:center;
+                color:black;
+            }
+        </style>
+    </head>
+    {{#if allRoutes}}
+        <table style="width:100%" >
+            <tr>
+                <th>Route name</th>
+                <th>Date</th>
+                <th>Details</th>
+            </tr>
+            {{#each allRoutes}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{date}}</td>
+                    <td>
+                        <a href="/routeDetails"><button class="btn btn-primary" id="btnDetails">Details</button></a>
+                    </td>
+                </tr>
+            {{/each}}
+        </table>
+    {{/if}}
 </div>

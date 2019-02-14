@@ -35,7 +35,7 @@ app.use(expSession({
     saveUninitialized: true
 }));
 app.use(passport.initialize());
-passport.use(expSession());
+app.use(passport.session());
 app.use(flash());
 
 // Global variables

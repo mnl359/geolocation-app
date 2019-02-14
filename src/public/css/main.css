@@ -13,3 +13,9 @@ input{
     align-items: center;
     justify-content: center
 }
+.btn-primary{
+    margin-top: 10px;
+}
+.table{
+    margin-top: 30px;
+}

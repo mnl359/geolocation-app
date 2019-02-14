@@ -1,0 +1,64 @@
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<input type="hidden" id="pointsArray" value="{{ pointsArray }}"/>
+<style>
+    #map{
+        height: 400px;
+        width: 100%;
+    }
+</style>
+<body>
+    <div id="map">
+        <h1>My google map</h1>
+    </div>
+    <script>
+        var map, infoWindow, allPoints;
+        function initMap() {
+            allPoints = JSON.parse(document.getElementById('pointsArray').value);
+            var options = {
+                zoom: 8,
+                center: {lat: 6.25184, lng: -75.56359}
+            }
+            map = new google.maps.Map(document.getElementById('map'), options);
+            infoWindow = new google.maps.InfoWindow;
+            var directionsService = new google.maps.DirectionsService;
+            var directionsRenderer = new google.maps.DirectionsRenderer;
+            directionsRenderer.setMap(map);
+            displayRoute(directionsService, directionsRenderer);
+        }
+        function displayRoute(directionsService, directionsRenderer){
+            // 8 is the max waypoints permited by Google Maps for non premium
+            var endPoints = [];
+            var max;
+            if(allPoints.length - 2 > 8){
+                max = Math.floor((allPoints.length - 2) / 8);
+            }
+            else{
+                max = 1;
+            }
+            for(var i = 0; i < allPoints.length; i = i + max){
+                endPoints.push({
+                    location: new google.maps.LatLng(allPoints[i].latitude, allPoints[i].longitude), 
+                    stopover: false
+                });
+            }
+            directionsService.route({
+                origin: new google.maps.LatLng(allpoints[0].latitude, allpoints[0].longitude),
+                destination: new google.maps.LatLng(allpoints[allpoints.length-1].latitude, allpoints[allpoints.length-1].longitude),
+                waypoints: endPoints,
+                optimizeWaypoints: true,
+                travelMode: 'WALKING'
+            },function(response, status){
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                }
+                else{
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7OfmFZe0L2C6UOLaQPXUlZWutYrLQ8rI&callback=initMap">
+    </script>
+</body>
+<a href="/geolocation"><button class="btn btn-primary " id="btnBack">Go back</button></a>
